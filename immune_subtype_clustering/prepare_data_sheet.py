@@ -81,4 +81,4 @@ if __name__ == "__main__":
     export_name = verify_export(
         final_df=final_df, export_name="immune_subtype_sample_sheet.tsv"
     )
-    syn_upload(export_name=export_name, syn_location="syn26535390")
+    syn_upload(export_name=export_name, syn_location="syn51471781")

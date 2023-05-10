@@ -34,7 +34,7 @@ def load_data_files(data_directory: str) -> List[pd.DataFrame]:
     gene_df_list = []
     for file in files:
         patient_id = file.split("_")[0]
-        df = pd.read_csv(data_directory + "/" + file, sep="\t")
+        df = pd.read_csv(os.path.join(data_directory, file), sep="\t")
         df.insert(0, "Hugo", df["target_id"].str.split("|", expand=True)[5])
         gene_df = df[["Hugo", "tpm"]]
         gene_df = gene_df.rename(columns={"tpm": patient_id})

@@ -1,8 +1,9 @@
 import os
+from typing import List
+
 import pandas as pd
 import synapseclient
 from synapseclient import File
-from typing import List
 
 
 def syn_login():

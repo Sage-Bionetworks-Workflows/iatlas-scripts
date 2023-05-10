@@ -2,3 +2,5 @@
 .env
 # data folder
 data/
+# jupyter notebooks
+*.ipynb

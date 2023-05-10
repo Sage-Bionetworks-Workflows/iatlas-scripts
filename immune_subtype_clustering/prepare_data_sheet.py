@@ -74,11 +74,13 @@ def syn_upload(export_name: str, syn_location: str):
     print(f"{export_name} uploaded to Synapse in {syn_location}")
 
 
+# Syn.store(..., Used= [syn11111, syn222], executed=[list of GitHub urls to scripts used]
+
 if __name__ == "__main__":
     download_data_files(parent="syn26535390")
-    gene_df_list = load_data_files(data_directory="./data")
-    final_df = merge_dfs(gene_df_list=gene_df_list)
-    export_name = verify_export(
-        final_df=final_df, export_name="immune_subtype_sample_sheet.tsv"
-    )
-    syn_upload(export_name=export_name, syn_location="syn51471781")
+    # gene_df_list = load_data_files(data_directory="./data")
+    # final_df = merge_dfs(gene_df_list=gene_df_list)
+    # export_name = verify_export(
+    #     final_df=final_df, export_name="immune_subtype_sample_sheet.tsv"
+    # )
+    # syn_upload(export_name=export_name, syn_location="syn51471781")

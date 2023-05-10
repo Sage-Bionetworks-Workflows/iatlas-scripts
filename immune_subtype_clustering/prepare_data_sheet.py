@@ -18,9 +18,9 @@ def download_data_files(parent: str):
     children = syn.getChildren(parent=parent)
     syn_id_list = []
     for child in children:
-        if str(child["name"]).endswith(".tsv"):
+        if child["name"].endswith(".tsv"):
             syn_id_list.append(child["id"])
-            syn.get(str(child["id"]), downloadLocation="./data")
+            syn.get(child["id"], downloadLocation="./data")
     return syn_id_list
 
 

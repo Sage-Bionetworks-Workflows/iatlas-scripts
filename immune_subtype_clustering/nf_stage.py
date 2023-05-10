@@ -49,8 +49,8 @@ def nextflow_stage_data():
         workspace_secrets=["SYNAPSE_AUTH_TOKEN"],
         # Comment out to intentionally cause an error with the workflow run
         params={
-            "input": "s3://iatlas-project-tower-bucket/input.csv",
-            "outdir": "s3://iatlas-project-tower-bucket/",
+            "input": "s3://iatlas-project-tower-bucket/immune_subtype_clustering/input.csv",
+            "outdir": "s3://iatlas-project-tower-bucket/immune_subtype_clustering/",
         },
     )
 

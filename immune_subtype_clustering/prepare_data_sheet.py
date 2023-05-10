@@ -15,9 +15,12 @@ def download_data_files(parent: str):
     """downloads all TSV files in parent synapse folder from synapse id provided"""
     syn = syn_login()
     children = syn.getChildren(parent=parent)
+    syn_id_list = []
     for child in children:
         if str(child["name"]).endswith(".tsv"):
+            syn_id_list.append(child["id"])
             syn.get(str(child["id"]), downloadLocation="./data")
+    return syn_id_list
 
 
 def load_data_files(data_directory: str) -> List[pd.DataFrame]:
@@ -66,21 +69,31 @@ def verify_export(final_df: pd.DataFrame, export_name: str):
         raise ValueError("Not all columns have identical values")
 
 
-def syn_upload(export_name: str, syn_location: str):
+def syn_upload(export_name: str, used_list: list, syn_location: str):
     """Uploads exported data file to Synapse in provided location"""
     syn = syn_login()
-    file = File(export_name, parent=syn_location)
-    file = syn.store(file, forceVersion=False)
+    file = File(
+        export_name,
+        parent=syn_location,
+    )
+    file = syn.store(
+        file,
+        used=used_list,
+        executed=[
+            "https://raw.githubusercontent.com/Sage-Bionetworks-Workflows/iatlas-scripts/immune_subtype_clustering/prepare_data_sheet.py"
+        ],
+        forceVersion=False,
+    )
     print(f"{export_name} uploaded to Synapse in {syn_location}")
 
 
-# Syn.store(..., Used= [syn11111, syn222], executed=[list of GitHub urls to scripts used]
-
 if __name__ == "__main__":
-    download_data_files(parent="syn26535390")
-    # gene_df_list = load_data_files(data_directory="./data")
-    # final_df = merge_dfs(gene_df_list=gene_df_list)
-    # export_name = verify_export(
-    #     final_df=final_df, export_name="immune_subtype_sample_sheet.tsv"
-    # )
-    # syn_upload(export_name=export_name, syn_location="syn51471781")
+    syn_id_list = download_data_files(parent="syn26535390")
+    gene_df_list = load_data_files(data_directory="./data")
+    final_df = merge_dfs(gene_df_list=gene_df_list)
+    export_name = verify_export(
+        final_df=final_df, export_name="immune_subtype_sample_sheet.tsv"
+    )
+    syn_upload(
+        export_name=export_name, used_list=syn_id_list, syn_location="syn51471781"
+    )

@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import os
+import sys
 from typing import List
 
 import pandas as pd
@@ -68,13 +71,13 @@ def merge_and_export(
 def syn_upload(
     export_name: str,
     file_entity_list: list,
-    syn_location: str,
+    upload_location: str,
     syn: synapseclient.Synapse,
 ):
     """Uploads exported data file to Synapse in provided location"""
     file = File(
         export_name,
-        parent=syn_location,
+        parent=upload_location,
     )
     file = syn.store(
         file,
@@ -84,19 +87,24 @@ def syn_upload(
         ],
         forceVersion=False,
     )
-    print(f"{export_name} uploaded to Synapse in {syn_location}")
+    print(f"{export_name} uploaded to Synapse in {upload_location}")
 
 
-if __name__ == "__main__":
+def main():
+    parent = sys.argv[1]  # "syn26535390"
+    export_name = sys.argv[2]  # "immune_subtype_sample_sheet.tsv"
+    upload_location = sys.argv[3]  # "syn51471781"
     syn = syn_login()
-    file_entity_list = download_data_files(parent="syn26535390", syn=syn)
+    file_entity_list = download_data_files(parent=parent, syn=syn)
     gene_df_list = load_data_files(file_entity_list=file_entity_list)
-    export_name = merge_and_export(
-        gene_df_list=gene_df_list, export_name="immune_subtype_sample_sheet.tsv"
-    )
+    export_name = merge_and_export(gene_df_list=gene_df_list, export_name=export_name)
     syn_upload(
         export_name=export_name,
         file_entity_list=file_entity_list,
-        syn_location="syn51471781",
+        upload_location=upload_location,
         syn=syn,
     )
+
+
+if __name__ == "__main__":
+    main()

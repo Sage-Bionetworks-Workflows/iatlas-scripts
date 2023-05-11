@@ -23,6 +23,20 @@ def download_data_files(parent: str, syn: synapseclient.Synapse):
     return file_entity_list
 
 
+def transform_df(df: pd.DataFrame, patient_id: str) -> pd.DataFrame:
+    """Applies needed transformations to each component dataframe prior to merging"""
+    # Grab Hugo ID from target_id col
+    df.insert(0, "Hugo", df["target_id"].str.split("|", expand=True)[5])
+    # Only need Hugo ID and tpm value
+    df = df[["Hugo", "tpm"]]
+    # Only need max tpm value for each Hugo ID
+    idx = df.groupby("Hugo")["tpm"].idxmax()
+    df = df.loc[idx]
+    # Rename tpm to the patient_id from the file name for merging into master data sheet
+    df = df.rename(columns={"tpm": patient_id})
+    return df
+
+
 def load_data_files(file_entity_list: List[synapseclient.File]) -> List[pd.DataFrame]:
     """loads all files in data_diectory into dataframes, creates Hugo column,
     grabs Hugo and tpm columns, renames tppm column to patient id, appends each df to gene_df_list
@@ -31,9 +45,7 @@ def load_data_files(file_entity_list: List[synapseclient.File]) -> List[pd.DataF
     for file in file_entity_list:
         patient_id = file.name.split("_")[0]
         df = pd.read_csv(file.path, sep="\t")
-        df.insert(0, "Hugo", df["target_id"].str.split("|", expand=True)[5])
-        gene_df = df[["Hugo", "tpm"]]
-        gene_df = gene_df.rename(columns={"tpm": patient_id})
+        gene_df = transform_df(df=df, patient_id=patient_id)
         gene_df_list.append(gene_df)
         print(f"Data from {file.name} loaded")
     return gene_df_list
@@ -43,11 +55,8 @@ def merge_dfs(gene_df_list: List[pd.DataFrame]) -> pd.DataFrame:
     """Joins all dfs in gene_df_list by index, renames all Hugo columns after first by index, returns final_df"""
     final_df = gene_df_list[0]
     gene_df_list.pop(0)
-    for i, gene_df in enumerate(gene_df_list):
-        # Create unique columns so that we can merge on index
-        # Cannot merge on "Hugo" because of duplicate values in that column
-        gene_df = gene_df.rename(columns={"Hugo": f"Hugo_{i}"})
-        final_df = pd.merge(final_df, gene_df, left_index=True, right_index=True)
+    for gene_df in gene_df_list:
+        final_df = pd.merge(final_df, gene_df, on="Hugo", how="outer")
     print("dfs all joined into final_df")
     return final_df
 

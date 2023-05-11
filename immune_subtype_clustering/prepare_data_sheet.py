@@ -51,14 +51,18 @@ def load_data_files(file_entity_list: List[synapseclient.File]) -> List[pd.DataF
     return gene_df_list
 
 
-def merge_dfs(gene_df_list: List[pd.DataFrame]) -> pd.DataFrame:
-    """Joins all dfs in gene_df_list by index, renames all Hugo columns after first by index, returns final_df"""
+def merge_and_export(
+    gene_df_list: List[pd.DataFrame],
+    export_name: str,
+) -> pd.DataFrame:
+    """Joins all dfs in gene_df_list by Hugo column, exports final_df to csv, returns name of file"""
     final_df = gene_df_list[0]
     gene_df_list.pop(0)
     for gene_df in gene_df_list:
         final_df = pd.merge(final_df, gene_df, on="Hugo", how="outer")
     print("dfs all joined into final_df")
-    return final_df
+    final_df.to_csv(export_name, index=False, sep="\t")
+    return export_name
 
 
 def syn_upload(
@@ -87,10 +91,11 @@ if __name__ == "__main__":
     syn = syn_login()
     file_entity_list = download_data_files(parent="syn26535390", syn=syn)
     gene_df_list = load_data_files(file_entity_list=file_entity_list)
-    final_df = merge_dfs(gene_df_list=gene_df_list)
-    final_df.to_csv("immune_subtype_sample_sheet.tsv", index=False, sep="\t")
+    export_name = merge_and_export(
+        gene_df_list=gene_df_list, export_name="immune_subtype_sample_sheet.tsv"
+    )
     syn_upload(
-        export_name="immune_subtype_sample_sheet.tsv",
+        export_name=export_name,
         file_entity_list=file_entity_list,
         syn_location="syn51471781",
         syn=syn,

@@ -5,7 +5,7 @@ import sys
 from orca.services.nextflowtower import NextflowTowerOps
 from orca.services.nextflowtower.models import LaunchInfo
 
-from immune_subtype_clustering.utils import monitor_run, configure_logging
+from utils import monitor_run, configure_logging
 
 
 def nextflow_execute_workflow(run_name: str, s3_file: str, cwl_file: str):

@@ -61,22 +61,6 @@ def merge_dfs(gene_df_list: List[pd.DataFrame]) -> pd.DataFrame:
     return final_df
 
 
-def verify_export(final_df: pd.DataFrame, export_name: str):
-    """Confirms that the contents of all Hugo columns are identical and thus that the index join was OK,
-    Drops all renamed Hugo columns, exports final_df to tsv
-    """
-    check_cols = [col for col in list(final_df.columns) if col.startswith("Hugo")]
-    if all(final_df[check_cols].iloc[:, 0].equals(final_df[col]) for col in check_cols):
-        print("All columns have identical values")
-        check_cols.pop(0)
-        final_df = final_df.drop(check_cols, axis=1)
-        final_df.to_csv(export_name, index=False, sep="\t")
-        print("Export complete")
-        return export_name
-    else:
-        raise ValueError("Not all columns have identical values")
-
-
 def syn_upload(
     export_name: str,
     file_entity_list: list,
@@ -104,11 +88,9 @@ if __name__ == "__main__":
     file_entity_list = download_data_files(parent="syn26535390", syn=syn)
     gene_df_list = load_data_files(file_entity_list=file_entity_list)
     final_df = merge_dfs(gene_df_list=gene_df_list)
-    export_name = verify_export(
-        final_df=final_df, export_name="immune_subtype_sample_sheet.tsv"
-    )
+    final_df.to_csv("immune_subtype_sample_sheet.tsv", index=False, sep="\t")
     syn_upload(
-        export_name=export_name,
+        export_name="immune_subtype_sample_sheet.tsv",
         file_entity_list=file_entity_list,
         syn_location="syn51471781",
         syn=syn,

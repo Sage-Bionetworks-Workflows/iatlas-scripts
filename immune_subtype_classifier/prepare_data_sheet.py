@@ -25,6 +25,19 @@ def download_data_files(parent: str, syn: synapseclient.Synapse):
     return file_entity_list
 
 
+def get_patient_id(file_id: str, syn: synapseclient.Synapse) -> str:
+    """Swaps out the file data id with the biospecimen id from the mapping table"""
+    map_file = syn.get("syn51526489")
+    mapping_df = pd.read_csv(map_file.path)
+    biospecimen_id = mapping_df.query(f"HTAN_Data_File_ID=='{file_id}'")[
+        "HTAN_Assayed_Biospecimen_ID"
+    ]
+    biospecimen_id = mapping_df.loc[
+        mapping_df["HTAN_Data_File_ID"] == file_id, "HTAN_Assayed_Biospecimen_ID"
+    ].values[0]
+    return biospecimen_id
+
+
 def transform_df(df: pd.DataFrame, patient_id: str) -> pd.DataFrame:
     """Applies needed transformations to each component dataframe prior to merging"""
     # Grab Hugo ID from target_id col
@@ -39,13 +52,16 @@ def transform_df(df: pd.DataFrame, patient_id: str) -> pd.DataFrame:
     return df
 
 
-def load_data_files(file_entity_list: List[synapseclient.File]) -> List[pd.DataFrame]:
+def load_data_files(
+    file_entity_list: List[synapseclient.File], syn: synapseclient.Synapse
+) -> List[pd.DataFrame]:
     """loads all files in data_diectory into dataframes, creates Hugo column,
     grabs Hugo and tpm columns, renames tppm column to patient id, appends each df to gene_df_list
     """
     gene_df_list = []
     for file in file_entity_list:
-        patient_id = file.name.split("_")[0]
+        file_id = file.annotations.get("HTANDataFileID")[0]
+        patient_id = get_patient_id(file_id, syn=syn)
         df = pd.read_csv(file.path, sep="\t")
         gene_df = transform_df(df=df, patient_id=patient_id)
         gene_df_list.append(gene_df)
@@ -92,10 +108,10 @@ def syn_upload(
 def main():
     parent = sys.argv[1]  # "syn26535390"
     export_name = sys.argv[2]  # "immune_subtype_sample_sheet.tsv"
-    upload_location = sys.argv[3]  # "syn51471781"
+    upload_location = sys.argv[3]  # "syn51526284"
     syn = syn_login()
     file_entity_list = download_data_files(parent=parent, syn=syn)
-    gene_df_list = load_data_files(file_entity_list=file_entity_list)
+    gene_df_list = load_data_files(file_entity_list=file_entity_list, syn=syn)
     export_name = merge_and_export(gene_df_list=gene_df_list, export_name=export_name)
     syn_upload(
         export_name=export_name,

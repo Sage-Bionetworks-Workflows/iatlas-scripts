@@ -85,6 +85,7 @@ def merge_and_export(
 def syn_upload(
     export_name: str,
     file_entity_list: list,
+    map_file_id: str,
     upload_location: str,
     syn: synapseclient.Synapse,
 ):
@@ -93,9 +94,11 @@ def syn_upload(
         export_name,
         parent=upload_location,
     )
+    provenance = [f.id for f in file_entity_list]
+    provenance.append(map_file_id)
     file = syn.store(
         file,
-        used=[f.id for f in file_entity_list],
+        used=provenance,
         executed=[
             "https://raw.githubusercontent.com/Sage-Bionetworks-Workflows/iatlas-scripts/immune_subtype_classifier/prepare_data_sheet.py"
         ],
@@ -118,6 +121,7 @@ def main():
     syn_upload(
         export_name=export_name,
         file_entity_list=file_entity_list,
+        map_file_id=map_file_id,
         upload_location=upload_location,
         syn=syn,
     )

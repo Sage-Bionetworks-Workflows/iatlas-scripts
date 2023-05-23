@@ -31,7 +31,7 @@ def main():
     ]  # "s3://iatlas-project-tower-bucket/immune_subtype_classifier/synstage/input.csv"
     cwl_file = sys.argv[
         3
-    ]  # "https://raw.githubusercontent.com/CRI-iAtlas/iatlas-workflows/develop/Immune_Subtype_Classifier/workflow/steps/immune_subtype_classifier/immune_subtype_classifier.cwl"
+    ]  # "https://raw.githubusercontent.com/CRI-iAtlas/iatlas-workflows/d94151d3aaadee96b52f27e4ce84692c0366fe75/Immune_Subtype_Classifier/workflow/steps/immune_subtype_classifier/immune_subtype_classifier.cwl"
     configure_logging()
     nextflow_execute_workflow(run_name=run_name, s3_file=s3_file, cwl_file=cwl_file)
 

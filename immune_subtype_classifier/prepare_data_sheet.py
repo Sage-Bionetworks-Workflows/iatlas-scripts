@@ -29,9 +29,6 @@ def get_patient_id(file_id: str, syn: synapseclient.Synapse) -> str:
     """Swaps out the file data id with the biospecimen id from the mapping table"""
     map_file = syn.get("syn51526489")
     mapping_df = pd.read_csv(map_file.path)
-    biospecimen_id = mapping_df.query(f"HTAN_Data_File_ID=='{file_id}'")[
-        "HTAN_Assayed_Biospecimen_ID"
-    ]
     biospecimen_id = mapping_df.loc[
         mapping_df["HTAN_Data_File_ID"] == file_id, "HTAN_Assayed_Biospecimen_ID"
     ].values[0]

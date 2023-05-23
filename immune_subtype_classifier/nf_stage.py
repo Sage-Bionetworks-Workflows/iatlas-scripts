@@ -26,13 +26,13 @@ def nextflow_stage_data(run_name: str, input: str, outdir: str):
 
 
 def main():
-    run_name = sys.argv[1]  # "immune_subtype_clustering_staging"
+    run_name = sys.argv[1]  # "immune_subtype_classifier_staging"
     input = sys.argv[
         2
-    ]  # "s3://iatlas-project-tower-bucket/immune_subtype_clustering/input.csv"
+    ]  # "s3://iatlas-project-tower-bucket/immune_subtype_classifier/input.csv"
     outdir = sys.argv[
         3
-    ]  # "s3://iatlas-project-tower-bucket/immune_subtype_clustering/"
+    ]  # "s3://iatlas-project-tower-bucket/immune_subtype_classifier/"
     configure_logging()
     nextflow_stage_data(run_name=run_name, input=input, outdir=outdir)
 

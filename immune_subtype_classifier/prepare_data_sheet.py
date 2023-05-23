@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 from typing import List
 
@@ -83,7 +82,7 @@ def syn_upload(
         file,
         used=[f.id for f in file_entity_list],
         executed=[
-            "https://raw.githubusercontent.com/Sage-Bionetworks-Workflows/iatlas-scripts/immune_subtype_clustering/prepare_data_sheet.py"
+            "https://raw.githubusercontent.com/Sage-Bionetworks-Workflows/iatlas-scripts/immune_subtype_classifier/prepare_data_sheet.py"
         ],
         forceVersion=False,
     )

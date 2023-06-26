@@ -4,9 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-py-orca = "*"
-pandas = "*"
-synapseclient = "*"
+py-orca = ">=1.3.0"
+pandas = "~=2.0.0"
+s3fs = "~=2023.5"
+metaflow = "~=2.9"
+fs-synapse = "~=1.0"
+
+
 
 [dev-packages]
 ipykernel = "*"

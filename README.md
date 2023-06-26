@@ -59,3 +59,22 @@ python immune_subtype_classifier/nf_stage.py <run_name> <input> <outdir>
 ```
 python immune_subtype_classifier/nf_launch.py <run_name> <s3_file> <cwl_file>
 ```
+
+
+## LENS
+
+Steps to run LENS workflow:
+1. Create necessary input files and upoload them to Synapse.
+    - The metaflow DAG requires 2 pre-formatted input files
+        - an input CSV file containing the LENS manifest information along with the Synapse URI's needed for `nf-synstage`
+    - A dataset YAML file containing a dataset ID and the Synapsee ID for the above described input CSV file
+2. Set up your environment.
+    - Use the `.env.example` file to create your own `.env` file with all of the necessary environment variables defined.
+    - Source your `.env` file 
+    ```
+    source .env
+    ```
+3. Run the `LENS/lens.py` script with appropriate inputs
+```
+python3 LENS/lens.py run --dataset_id <yaml-dataset-synapse-id> --s3_prefix s3://<your-s3-bucket>/<your-s3-subdirectory>
+```
